@@ -4,26 +4,13 @@ using UnityEngine;
 
 public class AudioController : MonoBehaviour
 {
+    //BGM Sources
+    private AudioSource melodySource;
+    private AudioSource bassSource;
+    private AudioSource drumsSource;
+    private AudioSource instrumentsSource;
 
-    // Old variables
-    /*
-    public AudioSource musicSource;
-    public AudioSource knifeSource;
-    public AudioSource boneSource;
-    public AudioClip bgm;
-    public AudioClip[] knife;
-    public AudioClip[] bone;
-    private int clipIndex;
-    private float pitchFloor = 1.0f;
-    private float pitchCeil = 1.5f;
-    */
-
-    //Music
-    public AudioSource melodySource;
-    public AudioSource bassSource;
-    public AudioSource drumsSource;
-    public AudioSource instrumentsSource;
-
+    //BGM Clips (temp)
     public AudioClip melody;
     public AudioClip bass;
     public AudioClip drums;
@@ -31,14 +18,22 @@ public class AudioController : MonoBehaviour
 
     //SFX
     //Sources and clips
-    public List<AudioSource> CarvingSources;
+    private List<AudioSource> CarvingSources = new List<AudioSource>();
+    AudioSource flameOngoing;
+    AudioSource flameLightUp;
     public AudioClip[] knifeClips;
     public AudioClip[] boneClips;
+    public AudioClip flameOn;
+    public AudioClip flameGoing;
 
-    //Pitch
+    //Carving pitch bounds
     private float pitchFloor = 1.0f;
     private float pitchCeil = 1.5f;
 
+    public void Start()
+    {
+        StartBackgroundMusic();
+    }
 
     private void Update()
     {
@@ -54,8 +49,6 @@ public class AudioController : MonoBehaviour
         newBoneSource.clip = boneClips[random];
         newKnifeSource.pitch = Random.Range(pitchFloor + random, pitchCeil + random);
         newBoneSource.pitch = Random.Range(pitchFloor + random, pitchCeil + random);
-        Debug.Log(newKnifeSource.pitch.ToString());
-        Debug.Log(newBoneSource.pitch.ToString());
         newKnifeSource.Play();
         newBoneSource.Play();
         CarvingSources.Add(newKnifeSource);
@@ -78,50 +71,49 @@ public class AudioController : MonoBehaviour
         }
     }
 
-    public void StartBackgroundMusic()
+    public void StartFlames()
     {
-        // Old music
-        /*
-        musicSource.clip = bgm;
-        musicSource.loop = true;
-        musicSource.Play();
-        */
+        flameOngoing = gameObject.AddComponent<AudioSource>();
+        flameLightUp = gameObject.AddComponent<AudioSource>();
+        flameOngoing.loop = true;
+        flameOngoing.clip = flameGoing;
+        flameOngoing.volume = 0.25f;
+        flameOngoing.Play();
+        FlareFlames();
+    }
 
-        melodySource = gameObject.AddComponent<AudioSource>();
+    public void FlareFlames()
+    {
+        flameLightUp.pitch = Random.Range(pitchFloor, pitchCeil);
+        flameLightUp.PlayOneShot(flameOn);
+    }
+
+    public void PutOutFlames()
+    {
+        flameOngoing.Pause();
+    }
+
+    private void StartBackgroundMusic()
+    {
+        //Create sources
+        AudioSource melodySource = gameObject.AddComponent<AudioSource>();
+        AudioSource bassSource = gameObject.AddComponent<AudioSource>();
+        AudioSource drumsSource = gameObject.AddComponent<AudioSource>();
+        AudioSource instrumentsSource = gameObject.AddComponent<AudioSource>();
+        //Select clips
         melodySource.clip = melody;
-        melodySource.loop = true;
-        bassSource = gameObject.AddComponent<AudioSource>(); 
         bassSource.clip = bass;
-        bassSource.loop = true;
-        drumsSource = gameObject.AddComponent<AudioSource>();  
         drumsSource.clip = drums;
-        drumsSource.loop = true;
-        instrumentsSource = gameObject.AddComponent<AudioSource>();
         instrumentsSource.clip = instruments;
+        //Turn on looping
         instrumentsSource.loop = true;
-
+        melodySource.loop = true;
+        drumsSource.loop = true;
+        bassSource.loop = true;
+        //Play BGM
         melodySource.Play();
         bassSource.Play();
         drumsSource.Play();
         instrumentsSource.Play();
     }
-
-
-    // Old sounds
-    /*
-    public void PlayCarvingSounds()
-    {
-        clipIndex = 1; //Random.Range(0, 2);
-        knifeSource.pitch = Random.Range(pitchFloor, pitchCeil);
-        boneSource.pitch = knifeSource.pitch + 0.5f;
-        //knifeSource.pitch = Random.Range(0.5f, 1.0f);
-        //boneSource.pitch = Random.Range(0.75f, 1.5f);
-        knifeSource.clip = knife[clipIndex];
-        boneSource.clip = bone[clipIndex];
-        knifeSource.Play();
-        boneSource.Play();
-    }
-    */
-
-
 }

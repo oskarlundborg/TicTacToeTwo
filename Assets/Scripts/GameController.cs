@@ -48,7 +48,6 @@ public class GameController : MonoBehaviour
         gameOverPanel.SetActive(false);
         moveCount = 0;
         restartButton.SetActive(false);
-        audioController.StartBackgroundMusic();
     }
     void SetControllerButtons()
     {
@@ -143,6 +142,7 @@ public class GameController : MonoBehaviour
             SetPlayerColors(playerO, playerX);
         }
         ToggleActivePlayerSymbol();
+        audioController.FlareFlames();
     }
     void SetGameOverText(string value)
     {
@@ -164,6 +164,7 @@ public class GameController : MonoBehaviour
         SetPlayerButtons(true);
         SetPlayerColorsInactive();
         startInfo.SetActive(true);
+        audioController.PutOutFlames();
     }
 
     void SetBoardInteractable(bool toggle)
@@ -203,6 +204,7 @@ public class GameController : MonoBehaviour
         SetBoardInteractable(true);
         SetPlayerButtons(false);
         startInfo.SetActive(false);
+        audioController.StartFlames();
     }
 
     void SetPlayerButtons(bool toggle)
