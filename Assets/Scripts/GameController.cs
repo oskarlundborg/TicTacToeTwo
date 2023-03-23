@@ -132,6 +132,7 @@ public class GameController : MonoBehaviour
 
     void ChangeSides()
     {
+        string prevPlayer = GetPlayerSide();
         playerSide = (playerSide == "X") ? "O" : "X";
         if (playerSide == "X")
         {
@@ -143,7 +144,7 @@ public class GameController : MonoBehaviour
         }
         ToggleActivePlayerSymbol();
         audioController.FlareFlames();
-        audioController.SwapMusic(GetPlayerSide());
+        audioController.SwapMusic(playerSide, prevPlayer);
     }
     void SetGameOverText(string value)
     {
@@ -166,7 +167,7 @@ public class GameController : MonoBehaviour
         SetPlayerColorsInactive();
         startInfo.SetActive(true);
         audioController.PutOutFlames();
-        audioController.SwapMusic("Default");
+        audioController.SwapMusic("Default", playerSide);
     }
 
     void SetBoardInteractable(bool toggle)
@@ -207,7 +208,7 @@ public class GameController : MonoBehaviour
         SetPlayerButtons(false);
         startInfo.SetActive(false);
         audioController.StartFlames();
-        audioController.SwapMusic(GetPlayerSide());
+        audioController.SwapMusic(GetPlayerSide(), "Default");
     }
 
     void SetPlayerButtons(bool toggle)

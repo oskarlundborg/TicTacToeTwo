@@ -1,3 +1,5 @@
+// Oskar Lundborg - oslu6451
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,31 +16,42 @@ public class AudioController : MonoBehaviour
     public AudioClip unholyLoop;
     public AudioClip holyLoop;
 
+    //BGM Fade Time
+    public float fadeTime = 1f;
+
     //SFX
     //Sources and clips
     private List<AudioSource> CarvingSources = new List<AudioSource>();
-    AudioSource flameOngoing;
-    AudioSource flameLightUp;
+    private AudioSource waterDropSource;
+    private AudioSource flameOngoingSource;
+    private AudioSource flameLightUpSource;
+    private AudioSource caveWindSource;
     public AudioClip[] knifeClips;
     public AudioClip[] boneClips;
-    public AudioClip flameOn;
-    public AudioClip flameGoing;
+    public AudioClip[] droppletClips;
+    public AudioClip flameLghtUp;
+    public AudioClip flameOngoing;
+    public AudioClip caveWind;
+
+    //Droplet Delay
+    float dropletDelay = 0f;
 
     //Carving pitch bounds
     private float pitchFloor = 1.0f;
     private float pitchCeil = 1.5f;
 
-    //BGM Fade Time
-    public float fadeTime = 3.0f;
+    
 
     public void Start()
     {
         StartBackgroundMusic();
+        StartAmbience();
     }
 
     private void Update()
     {
         CleanUpCarvingSources();
+        PlayWaterDropSound();
     }
 
     public void PlayCarvingSounds()
@@ -54,6 +67,19 @@ public class AudioController : MonoBehaviour
         newBoneSource.Play();
         CarvingSources.Add(newKnifeSource);
         CarvingSources.Add(newBoneSource);
+    }
+
+    private void PlayWaterDropSound()
+    {   
+        if (!waterDropSource.isPlaying && dropletDelay <= 0)
+        {
+            dropletDelay = Random.Range(1, 6);
+            waterDropSource.pitch = Random.Range(pitchFloor, pitchCeil);
+            waterDropSource.clip = droppletClips[Random.Range(0, 2)];
+            waterDropSource.Play();
+        }
+        dropletDelay -= Time.deltaTime;
+        Debug.Log(dropletDelay);
     }
 
     
@@ -72,26 +98,36 @@ public class AudioController : MonoBehaviour
         }
     }
 
+    private void StartAmbience()
+    {
+        waterDropSource = gameObject.AddComponent<AudioSource>();
+        waterDropSource.volume = 0.2f;
+        caveWindSource = gameObject.AddComponent<AudioSource>();
+        caveWindSource.loop = true;
+        caveWindSource.clip = caveWind;
+        caveWindSource.Play();
+    }
+
     public void StartFlames()
     {
-        flameOngoing = gameObject.AddComponent<AudioSource>();
-        flameLightUp = gameObject.AddComponent<AudioSource>();
-        flameOngoing.loop = true;
-        flameOngoing.clip = flameGoing;
-        flameOngoing.volume = 0.25f;
-        flameOngoing.Play();
+        flameOngoingSource = gameObject.AddComponent<AudioSource>();
+        flameLightUpSource = gameObject.AddComponent<AudioSource>();
+        flameOngoingSource.loop = true;
+        flameOngoingSource.clip = flameOngoing;
+        flameOngoingSource.volume = 0.25f;
+        flameOngoingSource.Play();
         FlareFlames();
     }
 
     public void FlareFlames()
     {
-        flameLightUp.pitch = Random.Range(pitchFloor, pitchCeil);
-        flameLightUp.PlayOneShot(flameOn);
+        flameLightUpSource.pitch = Random.Range(pitchFloor, pitchCeil);
+        flameLightUpSource.PlayOneShot(flameLghtUp);
     }
 
     public void PutOutFlames()
     {
-        flameOngoing.Pause();
+        flameOngoingSource.Pause();
     }
 
     private void StartBackgroundMusic()
@@ -117,98 +153,117 @@ public class AudioController : MonoBehaviour
         holySource.Play();
     }
 
-    public void SwapMusic(string player)
-    {
-        StopAllCoroutines();
 
-        if(player == "X")
+    // Starts and stops correct fade in/out coroutine
+    public void SwapMusic(string newPlayer, string prevPlayer)
+    {
+        if(newPlayer == "X")
         {
-            StartCoroutine(SwapToUnholyMusic());
-        } else if( player == "O")
+            StopCoroutine(FadeOutUnholy());
+            StartCoroutine(FadeInUnholy());
+            if(prevPlayer == "O") 
+            {
+                StopCoroutine(FadeInHoly());
+                StartCoroutine(FadeOutHoly());
+            } else
+            {
+                StopCoroutine(FadeInDefault());
+                StartCoroutine(FadeOutDefault());
+            }
+        } else if( newPlayer == "O")
         {
-            StartCoroutine(SwapToHolyMusic());
+            StopCoroutine(FadeOutHoly());
+            StartCoroutine(FadeInHoly());
+            if (prevPlayer == "X")
+            {
+                StopCoroutine(FadeInUnholy());
+                StartCoroutine(FadeOutUnholy());
+            } else
+            {
+                StopCoroutine(FadeInDefault());
+                StartCoroutine(FadeOutDefault());
+            }
         } else
         {
-            StartCoroutine(SwapToDefaultMusic());
-        }
-           
+            StopCoroutine(FadeOutDefault());
+            StartCoroutine(FadeInDefault());
+            if(prevPlayer == "X")
+            {
+                StopCoroutine(FadeInUnholy());
+                StartCoroutine(FadeOutUnholy());
+            } else
+            {
+                StopCoroutine(FadeInHoly());
+                StartCoroutine(FadeOutHoly()); 
+            }
+        }  
     }
 
 
-    //FULKOD
-    private IEnumerator SwapFromDefaultToUnholyMusic()
+    //Fading IEnumerators
+    private IEnumerator FadeOutDefault()
     {
         float timeElapsed = 0.0f;
         while (timeElapsed < fadeTime)
         {
-            unholySource.volume = Mathf.Lerp(0, 1, timeElapsed / fadeTime);
-            holySource.volume = Mathf.Lerp(1, 0, timeElapsed / fadeTime);
             mainSource.volume = Mathf.Lerp(1, 0, timeElapsed / fadeTime);
-            timeElapsed+= Time.deltaTime;
-            yield return null;
-        }
-    }
-
-    private IEnumerator SwapFromDefaultToHolyMusic()
-    {
-        float timeElapsed = 0.0f;
-        while (timeElapsed < fadeTime)
-        {
-            holySource.volume = Mathf.Lerp(0, 1, timeElapsed / fadeTime);
-            unholySource.volume = Mathf.Lerp(1, 0, timeElapsed / fadeTime);
-            mainSource.volume = Mathf.Lerp(1, 0, timeElapsed / fadeTime);
-            timeElapsed+= Time.deltaTime;
-            yield return null;
-        }
-
-    }
-
-    private IEnumerator SwapFromUnholyToDefaultMusic()
-    {
-        float timeElapsed = 0.0f;
-        while (timeElapsed < fadeTime)
-        {
-            mainSource.volume = Mathf.Lerp(0, 1, timeElapsed / fadeTime);
-            unholySource.volume = Mathf.Lerp(1, 0, timeElapsed / fadeTime);
-            timeElapsed+= Time.deltaTime;
-            yield return null;
-        }
-    }
-
-    private IEnumerator SwapFromHolyToDefaultMusic()
-    {
-        float timeElapsed = 0.0f;
-        while (timeElapsed < fadeTime)
-        {
-            mainSource.volume = Mathf.Lerp(0, 1, timeElapsed / fadeTime);
-            holySource.volume = Mathf.Lerp(1, 0, timeElapsed / fadeTime);
             timeElapsed += Time.deltaTime;
             yield return null;
         }
     }
 
-    private IEnumerator SwapFromUnholyToHolyMusic()
+    private IEnumerator FadeOutUnholy()
     {
         float timeElapsed = 0.0f;
         while (timeElapsed < fadeTime)
         {
-            holySource.volume = Mathf.Lerp(0, 1, timeElapsed / fadeTime);
             unholySource.volume = Mathf.Lerp(1, 0, timeElapsed / fadeTime);
             timeElapsed += Time.deltaTime;
             yield return null;
         }
     }
 
-    private IEnumerator SwapFromHolyToUnholyMusic()
+    private IEnumerator FadeOutHoly()
     {
         float timeElapsed = 0.0f;
         while (timeElapsed < fadeTime)
         {
             holySource.volume = Mathf.Lerp(1, 0, timeElapsed / fadeTime);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    private IEnumerator FadeInDefault()
+    {
+        float timeElapsed = 0.0f;
+        while (timeElapsed < fadeTime)
+        {
+            mainSource.volume = Mathf.Lerp(0, 1, timeElapsed / fadeTime);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    private IEnumerator FadeInUnholy()
+    {
+        float timeElapsed = 0.0f;
+        while (timeElapsed < fadeTime)
+        {
             unholySource.volume = Mathf.Lerp(0, 1, timeElapsed / fadeTime);
             timeElapsed += Time.deltaTime;
             yield return null;
         }
     }
 
+    private IEnumerator FadeInHoly()
+    {
+        float timeElapsed = 0.0f;
+        while (timeElapsed < fadeTime)
+        {
+            holySource.volume = Mathf.Lerp(0, 1, timeElapsed / fadeTime);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+    }
 }

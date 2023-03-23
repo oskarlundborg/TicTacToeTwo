@@ -4424,14 +4424,19 @@ MonoBehaviour:
   mainLoop: {fileID: 8300000, guid: c1855b73257493744add8dad8ff47368, type: 3}
   unholyLoop: {fileID: 8300000, guid: a149560807b85d748bb340189e4f6ff2, type: 3}
   holyLoop: {fileID: 8300000, guid: 482d4f5ec0a814445abde0ec043d70ef, type: 3}
+  fadeTime: 1
   knifeClips:
   - {fileID: 8300000, guid: ec4158f92782616469f6940a1e0bc578, type: 3}
   - {fileID: 8300000, guid: 971001f12e2eeae4aaa5947c4ba08fa4, type: 3}
   boneClips:
   - {fileID: 8300000, guid: 700ba4ce4d24cee48ab5d2e061bdfd04, type: 3}
   - {fileID: 8300000, guid: 6a6735a3a4e58174e8d293f1ee47c8f5, type: 3}
-  flameOn: {fileID: 8300000, guid: 276a7abbbcb5f6041a4ba2135a09e24f, type: 3}
-  flameGoing: {fileID: 8300000, guid: 5f6a077de053e164da0688644f3eaacb, type: 3}
+  droppletClips:
+  - {fileID: 8300000, guid: 935556702e5fae943be2b8de1f40e3c7, type: 3}
+  - {fileID: 8300000, guid: e270305577331d74e9fc2b78c8b738cd, type: 3}
+  flameLghtUp: {fileID: 8300000, guid: 276a7abbbcb5f6041a4ba2135a09e24f, type: 3}
+  flameOngoing: {fileID: 8300000, guid: 5f6a077de053e164da0688644f3eaacb, type: 3}
+  caveWind: {fileID: 8300000, guid: 9b24031bd910c2543a7ada7f92f181ee, type: 3}
 --- !u!1 &1750746615
 GameObject:
   m_ObjectHideFlags: 0
@@ -5356,7 +5361,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Holy or Unholy?\n \nChoose your sides!"
+  m_Text: "Holy or Unholy?\n \nChoose your side!"
 --- !u!222 &2069897409
 CanvasRenderer:
   m_ObjectHideFlags: 0
