@@ -143,6 +143,7 @@ public class GameController : MonoBehaviour
         }
         ToggleActivePlayerSymbol();
         audioController.FlareFlames();
+        audioController.SwapMusic(GetPlayerSide());
     }
     void SetGameOverText(string value)
     {
@@ -165,6 +166,7 @@ public class GameController : MonoBehaviour
         SetPlayerColorsInactive();
         startInfo.SetActive(true);
         audioController.PutOutFlames();
+        audioController.SwapMusic("Default");
     }
 
     void SetBoardInteractable(bool toggle)
@@ -205,6 +207,7 @@ public class GameController : MonoBehaviour
         SetPlayerButtons(false);
         startInfo.SetActive(false);
         audioController.StartFlames();
+        audioController.SwapMusic(GetPlayerSide());
     }
 
     void SetPlayerButtons(bool toggle)

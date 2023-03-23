@@ -5,16 +5,14 @@ using UnityEngine;
 public class AudioController : MonoBehaviour
 {
     //BGM Sources
-    private AudioSource melodySource;
-    private AudioSource bassSource;
-    private AudioSource drumsSource;
-    private AudioSource instrumentsSource;
+    private AudioSource mainSource;
+    private AudioSource unholySource;
+    private AudioSource holySource;
 
     //BGM Clips (temp)
-    public AudioClip melody;
-    public AudioClip bass;
-    public AudioClip drums;
-    public AudioClip instruments;
+    public AudioClip mainLoop;
+    public AudioClip unholyLoop;
+    public AudioClip holyLoop;
 
     //SFX
     //Sources and clips
@@ -29,6 +27,9 @@ public class AudioController : MonoBehaviour
     //Carving pitch bounds
     private float pitchFloor = 1.0f;
     private float pitchCeil = 1.5f;
+
+    //BGM Fade Time
+    public float fadeTime = 3.0f;
 
     public void Start()
     {
@@ -96,24 +97,118 @@ public class AudioController : MonoBehaviour
     private void StartBackgroundMusic()
     {
         //Create sources
-        AudioSource melodySource = gameObject.AddComponent<AudioSource>();
-        AudioSource bassSource = gameObject.AddComponent<AudioSource>();
-        AudioSource drumsSource = gameObject.AddComponent<AudioSource>();
-        AudioSource instrumentsSource = gameObject.AddComponent<AudioSource>();
+        mainSource = gameObject.AddComponent<AudioSource>();
+        unholySource = gameObject.AddComponent<AudioSource>();
+        holySource = gameObject.AddComponent<AudioSource>();
         //Select clips
-        melodySource.clip = melody;
-        bassSource.clip = bass;
-        drumsSource.clip = drums;
-        instrumentsSource.clip = instruments;
+        mainSource.clip = mainLoop;
+        unholySource.clip = unholyLoop;
+        holySource.clip = holyLoop;
         //Turn on looping
-        instrumentsSource.loop = true;
-        melodySource.loop = true;
-        drumsSource.loop = true;
-        bassSource.loop = true;
+        mainSource.loop = true;
+        unholySource.loop = true;
+        holySource.loop = true;
+        //Initialize volume
+        unholySource.volume = 0.0f;
+        holySource.volume = 0.0f;
         //Play BGM
-        melodySource.Play();
-        bassSource.Play();
-        drumsSource.Play();
-        instrumentsSource.Play();
+        mainSource.Play();
+        unholySource.Play();
+        holySource.Play();
     }
+
+    public void SwapMusic(string player)
+    {
+        StopAllCoroutines();
+
+        if(player == "X")
+        {
+            StartCoroutine(SwapToUnholyMusic());
+        } else if( player == "O")
+        {
+            StartCoroutine(SwapToHolyMusic());
+        } else
+        {
+            StartCoroutine(SwapToDefaultMusic());
+        }
+           
+    }
+
+
+    //FULKOD
+    private IEnumerator SwapFromDefaultToUnholyMusic()
+    {
+        float timeElapsed = 0.0f;
+        while (timeElapsed < fadeTime)
+        {
+            unholySource.volume = Mathf.Lerp(0, 1, timeElapsed / fadeTime);
+            holySource.volume = Mathf.Lerp(1, 0, timeElapsed / fadeTime);
+            mainSource.volume = Mathf.Lerp(1, 0, timeElapsed / fadeTime);
+            timeElapsed+= Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    private IEnumerator SwapFromDefaultToHolyMusic()
+    {
+        float timeElapsed = 0.0f;
+        while (timeElapsed < fadeTime)
+        {
+            holySource.volume = Mathf.Lerp(0, 1, timeElapsed / fadeTime);
+            unholySource.volume = Mathf.Lerp(1, 0, timeElapsed / fadeTime);
+            mainSource.volume = Mathf.Lerp(1, 0, timeElapsed / fadeTime);
+            timeElapsed+= Time.deltaTime;
+            yield return null;
+        }
+
+    }
+
+    private IEnumerator SwapFromUnholyToDefaultMusic()
+    {
+        float timeElapsed = 0.0f;
+        while (timeElapsed < fadeTime)
+        {
+            mainSource.volume = Mathf.Lerp(0, 1, timeElapsed / fadeTime);
+            unholySource.volume = Mathf.Lerp(1, 0, timeElapsed / fadeTime);
+            timeElapsed+= Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    private IEnumerator SwapFromHolyToDefaultMusic()
+    {
+        float timeElapsed = 0.0f;
+        while (timeElapsed < fadeTime)
+        {
+            mainSource.volume = Mathf.Lerp(0, 1, timeElapsed / fadeTime);
+            holySource.volume = Mathf.Lerp(1, 0, timeElapsed / fadeTime);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    private IEnumerator SwapFromUnholyToHolyMusic()
+    {
+        float timeElapsed = 0.0f;
+        while (timeElapsed < fadeTime)
+        {
+            holySource.volume = Mathf.Lerp(0, 1, timeElapsed / fadeTime);
+            unholySource.volume = Mathf.Lerp(1, 0, timeElapsed / fadeTime);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+    }
+
+    private IEnumerator SwapFromHolyToUnholyMusic()
+    {
+        float timeElapsed = 0.0f;
+        while (timeElapsed < fadeTime)
+        {
+            holySource.volume = Mathf.Lerp(1, 0, timeElapsed / fadeTime);
+            unholySource.volume = Mathf.Lerp(0, 1, timeElapsed / fadeTime);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+    }
+
 }

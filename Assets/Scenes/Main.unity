@@ -4421,10 +4421,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc1c5d1655c89ff4999b91f50cd4a68c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  melody: {fileID: 8300000, guid: 97b8c8600b9a4ba45b8cbe04bafebd8a, type: 3}
-  bass: {fileID: 8300000, guid: 21fa5ad107807674188ecd65dd8ec0d6, type: 3}
-  drums: {fileID: 8300000, guid: dd0f5c45a8da1134780848f5f058567c, type: 3}
-  instruments: {fileID: 8300000, guid: a8687ffb013f04646b5740269f630da4, type: 3}
+  mainLoop: {fileID: 8300000, guid: c1855b73257493744add8dad8ff47368, type: 3}
+  unholyLoop: {fileID: 8300000, guid: a149560807b85d748bb340189e4f6ff2, type: 3}
+  holyLoop: {fileID: 8300000, guid: 482d4f5ec0a814445abde0ec043d70ef, type: 3}
   knifeClips:
   - {fileID: 8300000, guid: ec4158f92782616469f6940a1e0bc578, type: 3}
   - {fileID: 8300000, guid: 971001f12e2eeae4aaa5947c4ba08fa4, type: 3}
