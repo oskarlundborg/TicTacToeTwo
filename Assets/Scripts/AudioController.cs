@@ -21,7 +21,7 @@ public class AudioController : MonoBehaviour
 
     //SFX
     //Sources and clips
-    private List<AudioSource> CarvingSources = new List<AudioSource>();
+    private List<AudioSource> CarvingSources = new();
     private AudioSource waterDropSource;
     private AudioSource flameOngoingSource;
     private AudioSource flameLightUpSource;
