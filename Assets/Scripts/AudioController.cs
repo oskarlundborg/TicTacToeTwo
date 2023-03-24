@@ -114,7 +114,7 @@ public class AudioController : MonoBehaviour
         flameLightUpSource = gameObject.AddComponent<AudioSource>();
         flameOngoingSource.loop = true;
         flameOngoingSource.clip = flameOngoing;
-        flameOngoingSource.volume = 0.25f;
+        flameOngoingSource.volume = 0.5f;
         flameOngoingSource.Play();
         FlareFlames();
     }
